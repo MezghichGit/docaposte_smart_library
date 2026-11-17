@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7fb">
+  <title>Smart Library — Ma bibliothèque</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="page-header">
+      <a class="brand" href="#" aria-label="Smart Library, accueil">
+        <span class="brand-mark" aria-hidden="true">SL</span>
+        <span class="brand-name">Smart Library</span>
+      </a>
+      <div class="header-note">
+        <span class="header-note-dot" aria-hidden="true"></span>
+        Votre collection, simplement
+      </div>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">ESPACE BIBLIOTHÈQUE</p>
+          <h1 id="page-title">Les livres que vous aimez,<br class="desktop-break"> à portée de main.</h1>
+          <p class="intro-copy">Organisez votre collection et gardez un oeil sur vos emprunts.</p>
+        </div>
+        <div class="intro-decoration" aria-hidden="true">
+          <span class="decoration-book decoration-book-one"></span>
+          <span class="decoration-book decoration-book-two"></span>
+          <span class="decoration-book decoration-book-three"></span>
+        </div>
+      </section>
+
+      <div id="storage-error" class="storage-alert" role="alert" hidden></div>
+      <p id="notice" class="notice" role="status" aria-live="polite"></p>
+
+      <section class="stats-grid" aria-label="Résumé de la collection">
+        <article class="stat-card stat-total">
+          <div class="stat-icon" aria-hidden="true">▤</div>
+          <div>
+            <p class="stat-label">Total des livres</p>
+            <p class="stat-value" id="total-count">0</p>
+          </div>
+        </article>
+        <article class="stat-card stat-available">
+          <div class="stat-icon" aria-hidden="true">✓</div>
+          <div>
+            <p class="stat-label">Disponibles</p>
+            <p class="stat-value" id="available-count">0</p>
+          </div>
+        </article>
+        <article class="stat-card stat-borrowed">
+          <div class="stat-icon" aria-hidden="true">↗</div>
+          <div>
+            <p class="stat-label">Empruntés</p>
+            <p class="stat-value" id="borrowed-count">0</p>
+          </div>
+        </article>
+      </section>
+
+      <div class="workspace-grid">
+        <section class="panel add-panel" aria-labelledby="add-heading">
+          <div class="section-heading">
+            <div class="section-icon" aria-hidden="true">+</div>
+            <div>
+              <p class="eyebrow">VOTRE COLLECTION</p>
+              <h2 id="add-heading">Ajouter un livre</h2>
+            </div>
+          </div>
+
+          <form id="book-form" novalidate>
+            <fieldset id="book-fields">
+              <legend class="visually-hidden">Informations du livre</legend>
+              <label class="field">
+                <span>Titre <span class="required-mark" aria-hidden="true">*</span></span>
+                <input id="title" name="title" type="text" autocomplete="off" placeholder="Ex. Le Petit Prince" required>
+              </label>
+
+              <label class="field">
+                <span>Auteur <span class="required-mark" aria-hidden="true">*</span></span>
+                <input id="author" name="author" type="text" autocomplete="off" placeholder="Ex. Antoine de Saint-Exupéry" required>
+              </label>
+
+              <label class="field">
+                <span>Catégorie <span class="required-mark" aria-hidden="true">*</span></span>
+                <input id="category" name="category" type="text" autocomplete="off" placeholder="Ex. Roman, histoire, science..." required>
+                <span class="field-hint">Choisissez librement votre catégorie.</span>
+              </label>
+
+              <label class="field">
+                <span>ISBN <span class="optional-mark">(facultatif)</span></span>
+                <input id="isbn" name="isbn" type="text" inputmode="numeric" autocomplete="off" placeholder="Ex. 978-2-07-036002-4">
+                <span class="field-hint">Un ISBN renseigné doit être valide et unique.</span>
+              </label>
+
+              <button class="button button-primary button-full" type="submit">
+                <span aria-hidden="true">+</span> Ajouter à ma collection
+              </button>
+              <p class="form-footnote"><span aria-hidden="true">*</span> Champs obligatoires</p>
+            </fieldset>
+          </form>
+        </section>
+
+        <section class="panel collection-panel" aria-labelledby="collection-heading">
+          <div class="collection-heading">
+            <div>
+              <p class="eyebrow">TOUS VOS OUVRAGES</p>
+              <h2 id="collection-heading">Ma collection</h2>
+            </div>
+            <p id="results-count" class="results-count" aria-live="polite">0 livre</p>
+          </div>
+
+          <div class="toolbar" aria-label="Rechercher, filtrer et trier les livres">
+            <label class="search-field">
+              <span class="visually-hidden">Rechercher par titre ou auteur</span>
+              <span class="search-icon" aria-hidden="true"></span>
+              <input id="search-input" type="search" placeholder="Rechercher un titre ou un auteur..." autocomplete="off">
+            </label>
+
+            <div class="filter-row">
+              <label class="select-field">
+                <span class="visually-hidden">Filtrer par statut</span>
+                <select id="status-filter">
+                  <option value="TOUS">Tous les statuts</option>
+                  <option value="DISPONIBLE">Disponibles</option>
+                  <option value="EMPRUNTE">Empruntés</option>
+                </select>
+              </label>
+              <label class="select-field">
+                <span class="visually-hidden">Filtrer par catégorie</span>
+                <select id="category-filter">
+                  <option value="">Toutes les catégories</option>
+                </select>
+              </label>
+              <label class="select-field">
+                <span class="visually-hidden">Trier les livres</span>
+                <select id="sort-order">
+                  <option value="newest">Ajout récent</option>
+                  <option value="oldest">Ajout ancien</option>
+                  <option value="title">Titre A à Z</option>
+                </select>
+              </label>
+              <button id="clear-filters" class="button button-quiet clear-button" type="button">Effacer les filtres</button>
+            </div>
+          </div>
+
+          <div id="books-list" class="books-grid" aria-live="polite" aria-labelledby="collection-heading"></div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="page-footer">
+      <span>Smart Library</span>
+      <span>Vos données restent enregistrées sur cet appareil.</span>
+    </footer>
+  </div>
+
+  <dialog id="loan-dialog" class="loan-dialog" aria-labelledby="loan-heading">
+    <form id="loan-form" novalidate>
+      <div class="dialog-heading">
+        <div>
+          <p class="eyebrow">NOUVEL EMPRUNT</p>
+          <h2 id="loan-heading">Enregistrer un emprunt</h2>
+          <p id="loan-book-title" class="dialog-book-title"></p>
+        </div>
+        <button id="loan-close" class="icon-button" type="button" aria-label="Fermer">×</button>
+      </div>
+
+      <label class="field">
+        <span>Nom de l'emprunteur <span class="required-mark" aria-hidden="true">*</span></span>
+        <input id="borrower" name="borrower" type="text" autocomplete="name" required>
+      </label>
+      <label class="field">
+        <span>Date de retour prévue <span class="required-mark" aria-hidden="true">*</span></span>
+        <input id="due-date" name="dueDate" type="date" required>
+      </label>
+      <div class="dialog-actions">
+        <button id="loan-cancel" class="button button-secondary" type="button">Annuler</button>
+        <button class="button button-primary" type="submit">Confirmer l'emprunt</button>
+      </div>
+    </form>
+  </dialog>
+</body>
+</html>
